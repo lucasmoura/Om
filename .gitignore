@@ -29,3 +29,6 @@ proguard/
 
 #appcompat
 appcompat_v7/
+
+#tasks
+tasks.txt

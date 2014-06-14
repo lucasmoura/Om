@@ -1,7 +1,28 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8" ?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    
     android:id="@+id/container"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.om.AllSongsActivity"
-    tools:ignore="MergeRootFrame" />
+    android:layout_height="match_parent">
+    
+    <EditText 
+    
+    	android:id="@+id/searchField"
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:hint="@string/searchFieldHint"
+    	android:gravity="center_horizontal"
+        
+    />
+    
+    <ListView 
+        
+        android:id="@+id/songList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+    </ListView>
+    
+</LinearLayout>

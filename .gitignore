@@ -25,6 +25,7 @@ proguard/
 #Eclipse project files
 .project
 .classpath
+.metadata/
 
 #appcompat
 appcompat_v7/

@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 public class AllSongsActivity extends ActionBarActivity 
@@ -24,21 +25,18 @@ public class AllSongsActivity extends ActionBarActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.all_songs);
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
-        }
         
         this.songListControl = new SongListControl(getApplicationContext());
+        this.songDisplay = (ListView)findViewById(R.id.songList);
+        displayAllSongs();
         
     }
     
     private boolean displayAllSongs()
     {
     	 this.songListControl.setUpSongList();
-    	 
+    	 ListAdapter adapter = (ListAdapter) this.songListControl.getSongListAdapter();
+    	 this.songDisplay.setAdapter(adapter);
     	 return true;
     }
 
@@ -56,11 +54,14 @@ public class AllSongsActivity extends ActionBarActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-       // if (id == R.id.action_settings) {
-         //   return true;
-        //}
-        return super.onOptionsItemSelected(item);
+       int id = item.getItemId();
+       
+       if (id == R.id.end) 
+       {
+            return true;
+       }
+       
+       return super.onOptionsItemSelected(item);
     }
 
     /**

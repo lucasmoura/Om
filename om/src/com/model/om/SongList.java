@@ -16,7 +16,6 @@ public class SongList
 	private ContentResolver musicResolver;
 	private Uri musicUri;
 	private Cursor musicCursor;
-	private Context context;
 	
 	public static SongList getInstance()
 	{
@@ -29,7 +28,6 @@ public class SongList
 	private SongList()
 	{
 		this.songList = new ArrayList<Song>();
-		this.context = null;
 		this.musicUri = null;
 		this.musicCursor = null;
 	}
@@ -39,26 +37,23 @@ public class SongList
 		return this.songList;
 	}
 	
-	private void setContext(Context context)
-	{
-		this.context = context;
-	}
 	
 	public void setMusicEnvironment(Context context)
-	{
-		if(this.context == null)
+	{	
+		if(context == null)
 			return;
 		
-		setContext(context);
-		musicResolver = context.getContentResolver();
-		musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-		musicCursor = musicResolver.query(musicUri, null, null, null, null);
+		this.musicResolver = context.getContentResolver();
+		this.musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+		this.musicCursor = musicResolver.query(musicUri, null, null, null, null);
 	}
 	
 	public void retrieveMusicFromDevice()
 	{
+		
 		if(musicCursor!=null && musicCursor.moveToFirst())
 		{
+			
 			int titleColumn = musicCursor.getColumnIndex
 					(android.provider.MediaStore.Audio.Media.TITLE);
 			int idColumn = musicCursor.getColumnIndex

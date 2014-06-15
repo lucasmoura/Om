@@ -21,9 +21,10 @@ public class SongListControl
 	{
 		SongList.getInstance().setMusicEnvironment(context);
 		SongList.getInstance().setOrderToAlphabetical();
+		SongList.getInstance().retrieveMusicFromDevice();
 	}
 	
-	public Adapter getSongList()
+	public Adapter getSongListAdapter()
 	{
 		this.adapter = new SongAdapter(context, SongList.getInstance().getSongList());
 		return this.adapter;

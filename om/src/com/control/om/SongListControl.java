@@ -1,15 +1,16 @@
 package com.control.om;
 
-import java.util.ArrayList;
 
 import android.content.Context;
+import android.widget.Adapter;
 
-import com.model.om.Song;
+import com.adapter.om.SongAdapter;
 import com.model.om.SongList;
 
 public class SongListControl 
 {
 	private Context context;
+	private SongAdapter adapter;
 	
 	public SongListControl(Context context)
 	{
@@ -22,8 +23,9 @@ public class SongListControl
 		SongList.getInstance().setOrderToAlphabetical();
 	}
 	
-	public ArrayList<Song> getSongList()
+	public Adapter getSongList()
 	{
-		return SongList.getInstance().getSongList();
+		this.adapter = new SongAdapter(context, SongList.getInstance().getSongList());
+		return this.adapter;
 	}
 }

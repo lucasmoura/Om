@@ -33,12 +33,12 @@ public class AllSongsActivity extends ActionBarActivity
         
         this.songListControl = new SongListControl(getApplicationContext());
         
-        
     }
     
     private boolean displayAllSongs()
     {
-    	 songDisplay = (ListView)findViewById(R.id.songList);
+    	 this.songListControl.setUpSongList();
+    	 
     	 return true;
     }
 

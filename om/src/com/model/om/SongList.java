@@ -88,7 +88,6 @@ public class SongList
 		int size = songList.size();
 		int start = 0;
 		int end = 0;
-		int newElements = 0;
 		String previousLetter = null;
 		Object[] tmpIndexItem = null;
 		
@@ -104,7 +103,7 @@ public class SongList
 			
 			if(previousLetter != null && !firstLetter.equals(previousLetter))
 			{
-				end = (i+newElements) -1;
+				end = i -1;
 				tmpIndexItem = new Object[3];
 				tmpIndexItem[0] = previousLetter.toUpperCase(Locale.UK);
 				tmpIndexItem[1] = start;
@@ -113,7 +112,6 @@ public class SongList
 				this.alphabet.add(tmpIndexItem);
 				
 				start = end + 1;
-				newElements++;
 			}
 			
 			if(!firstLetter.equals(previousLetter))

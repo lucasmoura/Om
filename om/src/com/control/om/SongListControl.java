@@ -20,13 +20,27 @@ public class SongListControl
 	public void setUpSongList()
 	{
 		SongList.getInstance().setMusicEnvironment(context);
-		SongList.getInstance().setOrderToAlphabetical();
 		SongList.getInstance().retrieveMusicFromDevice();
 	}
 	
 	public Adapter getSongListAdapter()
 	{
-		this.adapter = new SongAdapter(context, SongList.getInstance().getSongList());
+		this.adapter = new SongAdapter(SongList.getInstance().getSongList());
 		return this.adapter;
+	}
+	
+	public int getAlphabetSize()
+	{
+		return SongList.getInstance().getAlphabetSize();
+	}	
+	
+	public Object[] getAlphabetElement(int index)
+	{
+		return SongList.getInstance().getAlphabetElement(index);
+	}
+	
+	public int getAlphabetPosition(String letter)
+	{
+		return SongList.getInstance().getAlphabetPosition(letter);
 	}
 }

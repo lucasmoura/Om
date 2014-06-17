@@ -2,9 +2,10 @@ package com.adapter.om;
 
 import java.util.ArrayList;
 
+import com.model.om.Row;
 import com.model.om.Song;
+import com.model.om.Section;
 import com.om.R;
-
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,13 +17,11 @@ import android.widget.TextView;
 
 public class SongAdapter extends BaseAdapter
 {
-	private final ArrayList<Song> songs;
-	private LayoutInflater songInf;
+	private final ArrayList<Row> songs;
 	
-	public SongAdapter(Context context, ArrayList<Song> songs)
+	public SongAdapter(ArrayList<Row> songs)
 	{
 		this.songs = songs;
-		this.songInf = LayoutInflater.from(context);
 	}
 	
 	@Override
@@ -32,9 +31,9 @@ public class SongAdapter extends BaseAdapter
 	}
 
 	@Override
-	public Object getItem(int position) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object getItem(int position) 
+	{
+		return songs.get(position);
 	}
 
 	@Override
@@ -46,19 +45,51 @@ public class SongAdapter extends BaseAdapter
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
-		LinearLayout songLayout = (LinearLayout)songInf.inflate
-			      (R.layout.song, parent, false);
+
+		View view = convertView;
 		
-		  TextView songView = (TextView)songLayout.findViewById(R.id.song_title);
-		  TextView artistView = (TextView)songLayout.findViewById(R.id.song_artist);
-		  
-		  Song currSong = songs.get(position);
+	
+		if(getItemViewType(position) == 0)
+		{
+			
+				LayoutInflater inflater = (LayoutInflater) 
+						parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				view = (LinearLayout)inflater.inflate
+					      (R.layout.song, parent, false);
+			
+			
+			  TextView songView = (TextView)view.findViewById(R.id.song_title);
+			  TextView artistView = (TextView)view.findViewById(R.id.song_artist);
+			  
+			  Song currSong = (Song) songs.get(position);
+			
+			  songView.setText(currSong.getName());
+			  artistView.setText(currSong.getArtist());
+			 
+			  view.setTag(position);
+			  
+		}
+		else
+		{
+			 
+			LayoutInflater inflater = (LayoutInflater) 
+					parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			view = (LinearLayout) inflater.inflate(R.layout.alphabet_song_section, parent, false);
+			
+			Section section = (Section) getItem(position); 
+			TextView textView = (TextView) view.findViewById(R.id.alphabet_section); 
+			textView.setText(section.getName());
+		}
 		
-		  songView.setText(currSong.getName());
-		  artistView.setText(currSong.getArtist());
-		 
-		  songLayout.setTag(position);
-		  return songLayout;
+		return view;
+	}
+	
+	public int getItemViewType(int position)
+	{
+		if(getItem(position) instanceof Section)
+			return 1;
+		else
+			return 0;
 	}
 	
 }

@@ -1,28 +1,28 @@
 package com.model.om;
 
-public class Song 
+public class Song extends Row
 {
 	public long id;
-	public String name;
 	public String artist;
 	
 	public Song(long id, String name, String artist)
 	{
+		super(name);
 		this.id = id;
-		this.name = name;
 		this.artist = artist;
 	}
 
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
-	public String getName() {
-		return name;
+	public String getName() 
+	{
+		return super.name;
 	}
 
 	public String getArtist() {
-		return artist;
+		return this.artist;
 	}
 
 	

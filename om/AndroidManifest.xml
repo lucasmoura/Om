@@ -30,7 +30,8 @@
             android:name="com.view.om.AllSongsActivity"
             android:label="@string/app_name" 
             android:launchMode="singleTop"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateUnchanged">
             
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

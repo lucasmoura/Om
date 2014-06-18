@@ -3,6 +3,8 @@ package com.view.om;
 
 import com.control.om.SongListControl;
 import com.om.R;
+import com.service.om.MusicService;
+import com.service.om.MusicService.MusicBinder;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -19,6 +21,14 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import android.os.IBinder;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+//import android.view.MenuItem;
+//import android.view.View;
+
 public class AllSongsActivity extends ActionBarActivity 
 {
 
@@ -30,6 +40,9 @@ public class AllSongsActivity extends ActionBarActivity
 	private int indexListSize;
 	private int alphabetSize;
 	private GestureDetector mGestureDetector;
+	private MusicService musicService;
+	private Intent playIntent;
+	//private boolean musicBound;
 	
 	class SideIndexGestureListener extends GestureDetector.SimpleOnGestureListener
 	{
@@ -56,9 +69,30 @@ public class AllSongsActivity extends ActionBarActivity
         
         this.songListControl = new SongListControl(getApplicationContext());
         this.songDisplay = (ListView)findViewById(R.id.songList);
+        //this.musicBound = false;
+        
         displayAllSongs();
         
     }
+    
+  //connect to the service
+    private ServiceConnection musicConnection = new ServiceConnection(){
+     
+      @Override
+      public void onServiceConnected(ComponentName name, IBinder service) {
+        MusicBinder binder = (MusicBinder)service;
+        //get service
+        musicService = binder.getService();
+        //pass list
+        musicService.setSongList(songListControl.getSongList());
+        //musicBound = true;
+      }
+     
+      @Override
+      public void onServiceDisconnected(ComponentName name) {
+        //musicBound = false;
+      }
+    };
     
     private void displayAllSongs()
     {
@@ -154,14 +188,17 @@ public class AllSongsActivity extends ActionBarActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-       int id = item.getItemId();
+    	switch (item.getItemId()) 
+    	{
+    	
+	    	case R.id.action_end:
+	    	  stopService(this.playIntent);
+	    	  this.musicService=null;
+	    	  System.exit(0);
+	    	  break;
+    	}
+    	return super.onOptionsItemSelected(item);
        
-       if (id == R.id.end) 
-       {
-            return true;
-       }
-       
-       return super.onOptionsItemSelected(item);
     }
 
     
@@ -172,6 +209,24 @@ public class AllSongsActivity extends ActionBarActivity
     		return true;
     	else
     		return false;
+    }
+    
+    @Override
+    protected void onStart()
+    {
+    	super.onStart();
+    	if(this.playIntent == null)
+    	{
+    		playIntent = new Intent(this, MusicService.class);
+    		bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+    		startService(playIntent);
+    	}
+    }
+    
+    public void songPicked(View view)
+    {
+    	  this.musicService.setSong(Integer.parseInt(view.getTag().toString()));
+    	  this.musicService.playSong();
     }
 
 }

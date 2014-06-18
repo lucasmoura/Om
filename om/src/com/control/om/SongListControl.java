@@ -1,10 +1,13 @@
 package com.control.om;
 
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.widget.Adapter;
 
 import com.adapter.om.SongAdapter;
+import com.model.om.Row;
 import com.model.om.SongList;
 
 public class SongListControl 
@@ -42,5 +45,10 @@ public class SongListControl
 	public int getAlphabetPosition(String letter)
 	{
 		return SongList.getInstance().getAlphabetPosition(letter);
+	}
+	
+	public ArrayList<Row> getSongList()
+	{
+		return SongList.getInstance().getSongList();
 	}
 }

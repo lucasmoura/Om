@@ -1,10 +1,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     
     <item 
+    
+    	android:id="@+id/action_shuffle"
+    	android:icon="@drawable/rand"
+    	android:orderInCategory="1"
+    	android:showAsAction="always"
+    	android:title="@string/shuffle_menu_button"
+        
+    />
+    
+    <item 
         
         android:id="@+id/action_end"
         android:icon="@drawable/end"
-        android:orderInCategory="1"
+        android:orderInCategory="2"
         android:showAsAction="always"
         android:title="@string/end_menu_button"
     />

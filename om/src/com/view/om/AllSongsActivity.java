@@ -2,6 +2,7 @@ package com.view.om;
 
 
 import com.control.om.SongListControl;
+import com.model.om.MusicController;
 import com.om.R;
 import com.service.om.MusicService;
 import com.service.om.MusicService.MusicBinder;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.MediaController.MediaPlayerControl;
 import android.widget.TextView;
 
 import android.os.IBinder;
@@ -29,7 +31,7 @@ import android.content.ServiceConnection;
 //import android.view.MenuItem;
 //import android.view.View;
 
-public class AllSongsActivity extends ActionBarActivity 
+public class AllSongsActivity extends ActionBarActivity implements MediaPlayerControl
 {
 
 	public ListView songDisplay;
@@ -42,7 +44,10 @@ public class AllSongsActivity extends ActionBarActivity
 	private GestureDetector mGestureDetector;
 	private MusicService musicService;
 	private Intent playIntent;
-	//private boolean musicBound;
+	private MusicController musicController;
+	private boolean musicBound;
+	private boolean paused;
+	private boolean playbackPaused;
 	
 	class SideIndexGestureListener extends GestureDetector.SimpleOnGestureListener
 	{
@@ -67,11 +72,14 @@ public class AllSongsActivity extends ActionBarActivity
         
         mGestureDetector = new GestureDetector(this, new SideIndexGestureListener());
         
-        this.songListControl = new SongListControl(getApplicationContext());
-        this.songDisplay = (ListView)findViewById(R.id.songList);
-        //this.musicBound = false;
+        songListControl = new SongListControl(getApplicationContext());
+        songDisplay = (ListView)findViewById(R.id.songList);
+        musicBound = false;
+        paused = false;
+        playbackPaused = false;
         
         displayAllSongs();
+        setController();
         
     }
     
@@ -85,12 +93,12 @@ public class AllSongsActivity extends ActionBarActivity
         musicService = binder.getService();
         //pass list
         musicService.setSongList(songListControl.getSongList());
-        //musicBound = true;
+        musicBound = true;
       }
      
       @Override
       public void onServiceDisconnected(ComponentName name) {
-        //musicBound = false;
+        musicBound = false;
       }
     };
     
@@ -190,8 +198,12 @@ public class AllSongsActivity extends ActionBarActivity
         // as you specify a parent activity in AndroidManifest.xml.
     	switch (item.getItemId()) 
     	{
-    	
-	    	case R.id.action_end:
+    		
+    		case R.id.action_shuffle:
+    			musicService.setShuffle();
+    			break;
+    
+	    	case R.id.action_end:    		
 	    	  stopService(this.playIntent);
 	    	  this.musicService=null;
 	    	  System.exit(0);
@@ -225,8 +237,169 @@ public class AllSongsActivity extends ActionBarActivity
     
     public void songPicked(View view)
     {
-    	  this.musicService.setSong(Integer.parseInt(view.getTag().toString()));
-    	  this.musicService.playSong();
+    	musicService.setSong(Integer.parseInt(view.getTag().toString()));
+    	musicService.playSong();
+    	  
+    	if(playbackPaused)
+      	{
+      		setController();
+      		playbackPaused = false;
+      	}
+    	  
+    	musicController.show(0);
     }
+
+    private void setController()
+    {
+    	musicController = new MusicController(this);
+    	
+    	musicController.setPrevNextListeners(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) 
+			{
+				playNext();
+			}
+		}, new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				playPrevious();
+				
+			}
+		});
+    	
+    	musicController.setMediaPlayer(this);
+    	musicController.setAnchorView(findViewById(R.id.songList));
+    	musicController.setEnabled(true);
+    }
+    
+    private void playNext()
+    {
+    	musicService.playNext();
+    	
+    	if(playbackPaused)
+    	{
+    		setController();
+    		playbackPaused = false;
+    	}
+    	
+    	musicController.show(0);
+    }
+    
+    private void playPrevious()
+    {
+    	musicService.playerPrevious();
+    	
+    	if(playbackPaused)
+    	{
+    		setController();
+    		playbackPaused = false;
+    	}
+    	
+    	musicController.show(0);
+    }
+    
+	@Override
+	public void start() 
+	{
+		musicService.go();
+	}
+
+	@Override
+	public void pause() 
+	{
+		playbackPaused = true;
+		musicService.pausePlayer();
+	}
+
+	@Override
+	public int getDuration() 
+	{
+		if(musicService != null && musicBound && musicService.isPlaying())
+			return musicService.getDuration();
+		
+		return 0;
+	}
+
+	@Override
+	public int getCurrentPosition() 
+	{
+		if(musicService != null && musicBound && musicService.isPlaying())
+			return musicService.getPosition();
+		
+		return 0;
+	}
+
+	@Override
+	public void seekTo(int pos) 
+	{
+		musicService.seek(pos);
+	}
+
+	@Override
+	public boolean isPlaying() 
+	{
+		if(musicService != null && musicBound)
+			return musicService.isPlaying();
+		
+		return false;
+	}
+
+	@Override
+	public int getBufferPercentage() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean canPause() 
+	{
+		return true;
+	}
+
+	@Override
+	public boolean canSeekBackward()
+	{
+		return true;
+	}
+
+	@Override
+	public boolean canSeekForward() 
+	{
+		return true;
+	}
+
+	@Override
+	public int getAudioSessionId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	@Override
+	public void onPause()
+	{
+		super.onPause();
+		paused = true;
+	}
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		if(paused)
+		{
+			setController();
+			paused = false;
+		}
+	}
+	
+	@Override
+	protected void onStop()
+	{
+		musicController.hide();
+		super.onStop();
+	}
 
 }

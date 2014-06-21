@@ -8,5 +8,6 @@
     
     <!--Menu labels for all songs activity -->
    	<string name="end_menu_button">End</string>
+   	<string name="shuffle_menu_button">Shuffle</string>
 
 </resources>

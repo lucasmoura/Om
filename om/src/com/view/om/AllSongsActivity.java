@@ -79,6 +79,7 @@ public class AllSongsActivity extends ActionBarActivity implements MediaPlayerCo
         playbackPaused = false;
         
         displayAllSongs();
+        displayAlphabeticIndex();
         setController();
         
     }
@@ -102,21 +103,16 @@ public class AllSongsActivity extends ActionBarActivity implements MediaPlayerCo
       }
     };
     
-    private void displayAllSongs()
+    private void displayAlphabeticIndex()
     {
-    	this.songListControl.setUpSongList();
-    	this.alphabetSize = this.songListControl.getAlphabetSize();
-    	ListAdapter adapter = (ListAdapter) this.songListControl.getSongListAdapter();
-    	this.songDisplay.setAdapter(adapter);
+    	LinearLayout alphabeticList = (LinearLayout) findViewById(R.id.alphabeticSideIndex);
+    	alphabeticList.removeAllViews();
     	
-    	LinearLayout sideList = (LinearLayout) findViewById(R.id.alphabeticSideIndex);
-    	sideList.removeAllViews();
-    	
-    	this.indexListSize = this.alphabetSize;
+    	indexListSize = alphabetSize;
     	if(indexListSize<1)
     		return;
     	
-    	int indexMaxSize = (int) Math.floor(sideList.getHeight()/20);
+    	int indexMaxSize = (int) Math.floor(alphabeticList.getHeight()/20);
     	int tmpIndexListSize = indexListSize;
     	
     	while(tmpIndexListSize > indexMaxSize)
@@ -129,26 +125,26 @@ public class AllSongsActivity extends ActionBarActivity implements MediaPlayerCo
     	else
     		delta =1;
     	
-    	TextView tmpTV;
+    	TextView tmpTextView;
     	
     	for(double i = 1; i<=indexListSize; i = i+delta)
     	{
     		Object[] tmpIndexItem = this.songListControl.getAlphabetElement((int) i -1);
     		String tmpLetter = tmpIndexItem[0].toString();
     		
-    		tmpTV = new TextView(this);
-    		tmpTV.setText(tmpLetter);
-    		tmpTV.setGravity(Gravity.CENTER);
-    		tmpTV.setTextSize(15);
+    		tmpTextView = new TextView(this);
+    		tmpTextView.setText(tmpLetter);
+    		tmpTextView.setGravity(Gravity.CENTER);
+    		tmpTextView.setTextSize(15);
     		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams
     				(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-    		tmpTV.setLayoutParams(params);
-    		sideList.addView(tmpTV);
+    		tmpTextView.setLayoutParams(params);
+    		alphabeticList.addView(tmpTextView);
     	}
     	
-    	sideIndexHeight = sideList.getHeight();
+    	sideIndexHeight = alphabeticList.getHeight();
     	
-    	sideList.setOnTouchListener(new OnTouchListener() {
+    	alphabeticList.setOnTouchListener(new OnTouchListener() {
 			
     		@Override
 			public boolean onTouch(View v, MotionEvent event) 
@@ -161,6 +157,15 @@ public class AllSongsActivity extends ActionBarActivity implements MediaPlayerCo
 				return false;
 			}
 		});
+    }
+    
+    private void displayAllSongs()
+    {
+    	this.songListControl.setUpSongs();
+    	this.alphabetSize = this.songListControl.getAlphabetSize();
+    	ListAdapter adapter = (ListAdapter) this.songListControl.getSongListAdapter();
+    	this.songDisplay.setAdapter(adapter);
+    	
     	
     }
     
@@ -177,8 +182,7 @@ public class AllSongsActivity extends ActionBarActivity implements MediaPlayerCo
     		Object[] indexItem = this.songListControl.getAlphabetElement(itemPosition);
     		int subItemPosition = this.songListControl.getAlphabetPosition((String) indexItem[0]);
     		
-    		ListView list = (ListView)findViewById(R.id.songList);
-    		list.setSelection(subItemPosition);
+    		songDisplay.setSelection(subItemPosition);
     	}
     }
 

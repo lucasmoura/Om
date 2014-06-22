@@ -9,5 +9,19 @@
     <!--Menu labels for all songs activity -->
    	<string name="end_menu_button">End</string>
    	<string name="shuffle_menu_button">Shuffle</string>
+   	
+   	<!-- Labels for player layout -->
+   	<string name="song_title_default">My Song</string>
+   	<string name="playlist_description">Playlist</string>
+   	<string name="thumbnail_description">Thumbnail</string>
+   	
+   	<!-- Player button -->
+	<string name="previous_button">Previous Button</string>
+	<string name="backward_button">Backward Button</string>
+	<string name="play_button">Play Button</string>
+	<string name="forward_button">Forward Button</string>
+	<string name="next_button">Next Button</string>
+	<string name="repeat_button">Repeat Button</string>
+	<string name="shuffle_button">Shuffle Button</string>
 
 </resources>

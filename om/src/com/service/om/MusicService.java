@@ -8,6 +8,7 @@ import android.os.IBinder;
 import java.util.ArrayList;
 
 import com.model.om.Row;
+import com.model.om.Section;
 import com.model.om.Song;
 import com.om.R;
 import com.view.om.AllSongsActivity;
@@ -20,6 +21,7 @@ import android.os.Binder;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.util.Random;
 import android.app.Notification;
@@ -44,8 +46,13 @@ public class MusicService extends Service
 	private final IBinder musicBind = new MusicBinder();
 	private String songTitle;
 	private boolean shuffle;
+	private boolean paused;
+	private boolean repeat;
 	private Random rand;
 	private AudioManager audioManager;
+	private int duration;
+	private TextView songLabel;
+	//private ArrayList<ImageButton> buttons;
 	
 	private static final int NOTIFY_ID = 1;
 	
@@ -53,7 +60,11 @@ public class MusicService extends Service
 	{
 		super.onCreate();
 		songPosition = 0;
+		duration = 0;
 		shuffle = false;
+		paused = false;
+		repeat = false;
+		rand = new Random();
 		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		
 		initMusicPlayer();
@@ -95,9 +106,11 @@ public class MusicService extends Service
 	@Override
 	public void onCompletion(MediaPlayer mp) 
 	{
+		System.out.println("On Completion");
+		
 		if(player.getCurrentPosition()>0)
 		{
-			mp.reset();
+			//mp.reset();
 			playNext();
 		}
 	}
@@ -113,6 +126,8 @@ public class MusicService extends Service
 	public void onPrepared(MediaPlayer mp)
 	{
 		mp.start();
+		duration = mp.getDuration();
+		//setAllButtons(true);
 		
 		Intent notIntent = new Intent(this, AllSongsActivity.class);
 		notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -147,9 +162,11 @@ public class MusicService extends Service
 		if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
 		{
 		
-			this.player.reset();
+			System.out.println("Play Song Service");
+			player.reset();
 			
 			//get song
+			System.out.println("Position: "+songPosition);
 			Row item = songs.get(this.songPosition);
 			Song playSong = null;
 			
@@ -157,6 +174,7 @@ public class MusicService extends Service
 			{
 				playSong = (Song) item;
 				songTitle = playSong.getName();
+				songLabel.setText(songTitle);
 			}	
 			else
 				return;
@@ -178,6 +196,8 @@ public class MusicService extends Service
 				Log.e("MUSIC SERVICE", "Error setting data source", e);
 			}
 			
+			paused = false;
+			//setAllButtons(false);
 			player.prepareAsync();
 		}
 		else
@@ -185,6 +205,8 @@ public class MusicService extends Service
 		
 	}
 	
+
+
 	public void setSong(int songIndex)
 	{
 		  this.songPosition=songIndex;
@@ -197,7 +219,7 @@ public class MusicService extends Service
 	
 	public int getDuration()
 	{
-		return player.getDuration();
+		return duration;
 	}
 	
 	public boolean isPlaying()
@@ -208,6 +230,7 @@ public class MusicService extends Service
 	public void pausePlayer()
 	{
 		player.pause();
+		paused = true;
 	}
 	
 	public void seek(int position)
@@ -217,12 +240,21 @@ public class MusicService extends Service
 	
 	public void go()
 	{
-		player.start();
+		if(paused)
+		{
+			System.out.println("Pause");
+			player.start();
+		}
+		else
+			playSong();
 	}
 	
 	public void playPrevious()
 	{
 		songPosition--;
+		
+		if(songs.get(songPosition) instanceof Section)
+			songPosition--;
 		
 		if(songPosition<0)
 			songPosition = songs.size()-1;
@@ -232,7 +264,14 @@ public class MusicService extends Service
 	
 	public void playNext()
 	{
-		if(shuffle)
+		System.out.println("Play Next");
+		
+		if(repeat)
+		{
+			playSong();
+			return;
+		}	
+		else if(shuffle)
 		{
 			int newSong = songPosition;
 			int size = songs.size();
@@ -250,7 +289,11 @@ public class MusicService extends Service
 				songPosition = 0;
 		}	
 		
+		if(songs.get(songPosition) instanceof Section)
+			songPosition++;
+		
 		playSong();
+		
 	}
 	
 	public void setShuffle()
@@ -260,6 +303,15 @@ public class MusicService extends Service
 		else
 			shuffle = true;
 	}
+	
+	public void setRepeat()
+	{
+		if(repeat)
+			repeat = false;
+		else
+			repeat = true;
+	}
+	
 	
 	@Override
 	public void onDestroy()
@@ -310,7 +362,23 @@ public class MusicService extends Service
 		}
 		
 	}
+
+	public void setSongLabel(TextView songTitleLabel) 
+	{
+		songLabel = songTitleLabel;
+	}
 	
+	/*public void setButtons(ArrayList<ImageButton> buttons)
+	{
+		this.buttons = buttons;
+	}
+	
+	private void setAllButtons(boolean value) 
+	{
+		for(int i =0; i<buttons.size(); i++)
+			buttons.get(i).setEnabled(value);
+	}*/
+
 	
 
 }

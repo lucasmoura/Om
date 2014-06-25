@@ -1,5 +1,7 @@
 package com.view.om;
 
+import java.util.ArrayList;
+
 import com.control.om.SongListControl;
 import com.om.R;
 import com.om.util.Util;
@@ -24,7 +26,6 @@ import android.widget.TextView;
 
 
 public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBarChangeListener
-
 {
 	
 	//Buttons available on the player
@@ -48,13 +49,14 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	private SongListControl songListControl;
 	private Intent playIntent;
 	private Handler mHandler;
-	int currentSongIndex;
+	private int currentSongIndex;
 	
 	private TextView songCurrentDurationLabel;
 	private TextView songTotalDurationLabel;
 	private TextView songTitleLabel;
 	
 	private SeekBar songProgressBar;
+	private ArrayList<ImageButton> buttons;
 	
 	
 	@Override
@@ -88,6 +90,16 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 		btnBackward.setOnClickListener(clickListener);
 		btnShuffle.setOnClickListener(clickListener);
 		btnPrevious.setOnClickListener(clickListener);
+		
+		buttons = new ArrayList<ImageButton>();
+		
+		buttons.add(btnBackward);
+		buttons.add(btnForward);
+		buttons.add(btnNext);
+		buttons.add(btnPlay);
+		buttons.add(btnPrevious);
+		buttons.add(btnRepeat);
+		buttons.add(btnShuffle);
 		
 		songProgressBar.setOnSeekBarChangeListener(this);
 		playIntent = null;
@@ -125,7 +137,10 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	        //pass list
 	        musicService.setSongList(songListControl.getSongList());
 	        musicBound = true;
+	        
 	        musicService.setSong(currentSongIndex);
+	        musicService.setSongLabel(songTitleLabel);
+	        //musicService.setButtons(buttons);
 	        playSong();
 	      }
 	     
@@ -156,7 +171,6 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
     		playIntent = new Intent(this, MusicService.class);
     		bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
     		startService(playIntent);
-    		System.out.println("Aqui: " +musicBound);
     	}
     	
     }
@@ -216,7 +230,8 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	
 	private void playSong()
 	{
-			
+		System.out.println("PlaySong");
+		
 		if(isPlaying())
 		{
 			if(musicService !=null)
@@ -231,8 +246,10 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 			// Resume song
 			if(musicService!=null)
 			{
+				System.out.println("Go");
 				musicService.go();
-				songTitleLabel.setText(musicService.getSongTitle());
+				System.out.println("Set Title");
+				//songTitleLabel.setText(musicService.getSongTitle());
 				// Changing button image to pause button
 				btnPlay.setImageResource(R.drawable.btn_pause);
 			}
@@ -252,6 +269,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	private void playPrevious()
 	{
 		musicService.playPrevious();
+	
 	}
 	
 	private boolean isPlaying()
@@ -265,6 +283,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	private void forward()
 	{
 		int currentPosition = musicService.getPosition();
+		System.out.println(currentPosition + seekForwardTime);
 		// check if seekForward time is lesser than song duration
 		if(currentPosition + seekForwardTime <= musicService.getDuration())
 			musicService.seek(currentPosition + seekForwardTime);
@@ -311,6 +330,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 		if(isRepeat)
 		{
 			isRepeat = false;
+			musicService.setRepeat();
 			btnRepeat.setImageResource(R.drawable.btn_repeat);
 		}
 		else
@@ -319,6 +339,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 			isRepeat = true;
 			// make shuffle to false
 			isShuffle = false;
+			musicService.setRepeat();
 			btnRepeat.setImageResource(R.drawable.btn_repeat_focused);
 			btnShuffle.setImageResource(R.drawable.btn_shuffle);
 		}
@@ -328,7 +349,11 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) 
 	{
-		
+		 if (musicService != null || musicService.isPlaying())
+		 {
+			    if (fromUser)
+			     musicService.seek(progress);
+		 }
 		
 	}
 

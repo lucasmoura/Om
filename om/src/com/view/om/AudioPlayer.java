@@ -405,4 +405,12 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 		   }
 	};
 	
+	@Override
+	public void onDestroy()
+	{
+		stopService(playIntent);
+		musicService=null;
+		super.onDestroy();
+	}
+	
 }

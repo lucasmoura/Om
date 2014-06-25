@@ -251,6 +251,12 @@ public class MusicService extends Service
 	
 	public void playPrevious()
 	{
+		if(repeat)
+		{
+			playSong();
+			return;
+		}
+		
 		songPosition--;
 		
 		if(songs.get(songPosition) instanceof Section)

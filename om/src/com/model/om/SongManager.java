@@ -59,20 +59,20 @@ public class SongManager
 				    (android.provider.MediaStore.Audio.Media._ID);
 			int artistColumn = musicCursor.getColumnIndex
 				    (android.provider.MediaStore.Audio.Media.ARTIST);
-			int pathColumn = musicCursor.getColumnIndex
-					(android.provider.MediaStore.Audio.Media.DATA);
 			
 			do 
 			{
 			    long thisId = musicCursor.getLong(idColumn);
 			    String thisTitle = musicCursor.getString(titleColumn);
 			    String thisArtist = musicCursor.getString(artistColumn);
-			    String thisPath = musicCursor.getString(pathColumn);
-			    songs.add(new Song(thisId, thisTitle, thisArtist, thisPath ));
+			    songs.add(new Song(thisId, thisTitle, thisArtist));
 			    
 			}while (musicCursor.moveToNext());
 			  
 		}
+		
+		if( musicCursor != null && !musicCursor.isClosed() )
+	        musicCursor.close();
 	}
 	
 	

@@ -41,7 +41,7 @@ public class MusicService extends Service
 	private MediaPlayer player;
 	private ArrayList<Row> songs;
 	private int songPosition;
-	private IBinder musicBind;
+	private final IBinder musicBind = new MusicBinder();
 	private String songTitle;
 	private boolean shuffle;
 	private Random rand;
@@ -53,7 +53,6 @@ public class MusicService extends Service
 	{
 		super.onCreate();
 		songPosition = 0;
-		musicBind = new MusicBinder();
 		shuffle = false;
 		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		
@@ -80,7 +79,8 @@ public class MusicService extends Service
 	}
 	
 	@Override
-	public IBinder onBind(Intent intent) {
+	public IBinder onBind(Intent intent)
+	{
 		return this.musicBind;
 	}
 	
@@ -133,6 +133,11 @@ public class MusicService extends Service
 		
 		startForeground(NOTIFY_ID, notification);
 			
+	}
+	
+	public String getSongTitle()
+	{
+		return songTitle;
 	}
 	
 	public void playSong()
@@ -215,7 +220,7 @@ public class MusicService extends Service
 		player.start();
 	}
 	
-	public void playerPrevious()
+	public void playPrevious()
 	{
 		songPosition--;
 		

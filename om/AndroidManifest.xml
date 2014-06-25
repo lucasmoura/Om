@@ -2,17 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.om"
     android:versionCode="1"
-    android:versionName="1.0">
-    
-    <uses-permission 
-        
-        android:name="android.permission.WAKE_LOCK" 
-    />
-    
-    <uses-permission 
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-    />
-    
+    android:versionName="1.0" >
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -23,23 +16,25 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        
         <service android:name="com.service.om.MusicService" />
-        
+
         <activity
             android:name="com.view.om.AllSongsActivity"
-            android:label="@string/app_name" 
+            android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateUnchanged">
-            
+            android:windowSoftInputMode="stateUnchanged" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            
         </activity>
         
+        <activity
+            android:name="com.view.om.AudioPlayer"
+            android:label="@string/title_activity_audio_player" >
+        </activity>
     </application>
 
 </manifest>

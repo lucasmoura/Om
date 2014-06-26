@@ -307,15 +307,13 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	private void playNext()
 	{
 		musicService.playNext();
-		onEnterIntent = NEW_SONG;
-		playSong();
+		btnPlay.setImageResource(R.drawable.btn_pause);
 	}
 	
 	private void playPrevious()
 	{
 		musicService.playPrevious();
-		onEnterIntent = NEW_SONG;
-		playSong();
+		btnPlay.setImageResource(R.drawable.btn_pause);
 	
 	}
 	

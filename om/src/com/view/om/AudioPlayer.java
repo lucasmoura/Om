@@ -12,6 +12,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -25,6 +29,7 @@ import android.widget.TextView;
 
 
 public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBarChangeListener
+
 {
 	
 	//Buttons available on the player
@@ -144,13 +149,13 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	        //get service
 	        
 	        musicService = binder.getService();
+	        musicService.getMediaPlayer().setOnCompletionListener(onCompletion);
 	        
 	        //pass list
 	        musicService.setSongList(songListControl.getSongList());
 	        musicBound = true;
 	        
 	        musicService.setSong(currentSongIndex);
-	        musicService.setSongLabel(songTitleLabel);
 	        //musicService.setButtons(buttons);
 	        playSong();
 	      }
@@ -185,6 +190,20 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
     	}
     	
     }
+	
+	final OnCompletionListener onCompletion = new OnCompletionListener()
+	{
+		
+		@Override
+		public void onCompletion(MediaPlayer mp) 
+		{
+			System.out.println("On Completion");
+			
+			if(mp.getCurrentPosition()>0)
+				playNext();
+		}
+
+	};
 	
 	final OnClickListener clickListener = new OnClickListener() 
 	{
@@ -250,17 +269,20 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 			case NEW_SONG:
 				System.out.println("New Song");
 				musicService.playSong();
+				songTitleLabel.setText(musicService.getSongTitle());
 				btnPlay.setImageResource(R.drawable.btn_pause);
-				setUpProgressBar();
 				onEnterIntent = CONTINUE;
+				setUpProgressBar();
 				break;
 			
 			case NOW_PLAYING:
-				onEnterIntent = CONTINUE;
+				System.out.println("Now Playing");
+				parseAudioPreferences();
 				break;
 			
 			case PLAY:
 				
+				System.out.println("Play Song Audio Player");
 				if(musicService != null && isPlaying())
 				{
 					musicService.pausePlayer();
@@ -269,50 +291,30 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 				else
 				{
 					musicService.go();
+					songTitleLabel.setText(musicService.getSongTitle());
 					btnPlay.setImageResource(R.drawable.btn_pause);
 				}
+				
+				setUpProgressBar();
 				
 				break;
 				
 		}
 		
-		/*if(!verifyPlaySongStatus())
-			return;
-			
-		if(isPlaying())
-		{
-			if(musicService !=null)
-			{
-				System.out.println("Pause audio player");
-				musicService.pausePlayer();
-				// Changing button image to play button
-				btnPlay.setImageResource(R.drawable.btn_play);
-			}
-		}
-		else
-		{
-			// Resume song
-			if(musicService!=null)
-			{
-				System.out.println("Go");
-				musicService.go();
-				// Changing button image to pause button
-				btnPlay.setImageResource(R.drawable.btn_pause);
-			}
-		}*/
 		
-		setUpProgressBar();
 	}
-	
+
 	private void playNext()
 	{
 		musicService.playNext();
+		songTitleLabel.setText(musicService.getSongTitle());
 		btnPlay.setImageResource(R.drawable.btn_pause);
 	}
 	
 	private void playPrevious()
 	{
 		musicService.playPrevious();
+		songTitleLabel.setText(musicService.getSongTitle());
 		btnPlay.setImageResource(R.drawable.btn_pause);
 	
 	}
@@ -398,16 +400,118 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 		
 		
 	}
+	
+	private void setAudioPreferences()
+	{
+		SharedPreferences audioPreferences = this.getSharedPreferences("audio_preferences",
+				Context.MODE_PRIVATE);
+		Editor editor = audioPreferences.edit();
+		
+		editor.putString("title", songTitleLabel.getText().toString());
+		editor.putInt("songIndex", musicService.getSongPosition());
+		
+		if(isRepeat)
+			editor.putBoolean("repeat", true);
+		else
+			editor.putBoolean("repeat", false);
+		
+		if(isShuffle)
+			editor.putBoolean("shuffle", true);
+		else
+			editor.putBoolean("shuffle", false);
+		
+		if(isPlaying())
+		{	
+			editor.putInt("position", musicService.getPosition());
+			editor.putInt("duration", musicService.getDuration());
+		}	
+		
+		editor.apply();
+	}
+	
+	private void parseAudioPreferences()
+	{
+		System.out.println("Parse Preferences");
+		SharedPreferences audioPreferences = this.getSharedPreferences("audio_preferences",
+				Context.MODE_PRIVATE);
+		
+		String defaultTitle = null;
+		
+		if(musicService != null)
+			defaultTitle = musicService.getDefaultSongTitle();
+		
+		if(defaultTitle == null)
+			defaultTitle = "";
+		
+		String title = audioPreferences.getString("title", defaultTitle);
+		boolean repeat = audioPreferences.getBoolean("repeat", false);
+		boolean shuffle = audioPreferences.getBoolean("shuffle", false);
+		int current = audioPreferences.getInt("position", 0);
+		int duration = audioPreferences.getInt("duration", 0);
+		int index = audioPreferences.getInt("songIndex", 1);
+		
+		setComponentsViaAudioPreferences(title, repeat, shuffle, current, duration,index );
+		
+	}
+	
+	private void setComponentsViaAudioPreferences(String title, boolean repeat, 
+			boolean shuffle, int current, int duration, int index)
+	{
+		System.out.println(title);
+		System.out.println("Duration: "+duration);
+		System.out.println("Positio: "+current);
+		songTitleLabel.setText(title);
+		
+		if(repeat)
+		{
+			isRepeat = false;
+			repeatSong();
+		}
+		
+		if(shuffle)
+		{
+			isShuffle = false;
+			shuffle();
+		}
+		
+		if(isPlaying())
+		{
+			btnPlay.setImageResource(R.drawable.btn_pause);
+			setUpProgressBar();
+			onEnterIntent = CONTINUE;
+		}	
+		else
+		{
+			btnPlay.setImageResource(R.drawable.btn_play);
+			//musicService.seek(current);
+			songProgressBar.setProgress((int)
+					(Util.getProgressPercentage(current, duration)));
+			//updateProgressBar();
+			System.out.println(index);
+			currentSongIndex = index;
+			musicService.setSong(currentSongIndex);
+			musicService.setToSeek(true, current);
+		    // Displaying Total Duration time
+		    songTotalDurationLabel.setText(""+Util.milliSecondsToTimer(duration));
+		    // Displaying time completed playing
+		    songCurrentDurationLabel.setText(""+Util.milliSecondsToTimer(current));
+			onEnterIntent = PLAY;
+			System.out.println("OnEnterIntent: "+onEnterIntent);
+		}
+			
+			
+	}
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) 
 	{
-		 if (musicService != null || musicService.isPlaying())
+		 if (musicService != null && musicService.isPlaying())
 		 {
 			    if (fromUser)
 			     musicService.seek(progress);
 		 }
+		 
 		
 	}
 
@@ -458,6 +562,21 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 		       mHandler.postDelayed(this, 100);
 		   }
 	};
+	
+	@Override
+	public void onRestart()
+	{
+		System.out.println("OnRestart");
+		parseAudioPreferences();
+		super.onResume();
+	}
+	
+	@Override
+	public void onStop()
+	{
+		setAudioPreferences();
+		super.onStop();
+	}
 	
 	@Override
 	public void onDestroy()

@@ -21,15 +21,14 @@ import android.os.Binder;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.TextView;
 
 import java.util.Random;
 import android.app.Notification;
 import android.app.PendingIntent;
 
 public class MusicService extends Service
-	implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
-	MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener
+	implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener
+	, AudioManager.OnAudioFocusChangeListener
 {
 	
 	public class MusicBinder extends Binder
@@ -51,7 +50,8 @@ public class MusicService extends Service
 	private Random rand;
 	private AudioManager audioManager;
 	private int duration;
-	private TextView songLabel;
+	private boolean toSeek;
+	private int current;
 	
 	private static final int NOTIFY_ID = 1;
 	
@@ -63,6 +63,8 @@ public class MusicService extends Service
 		shuffle = false;
 		paused = false;
 		repeat = false;
+		toSeek = false;
+		current = 0;
 		rand = new Random();
 		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		
@@ -79,8 +81,12 @@ public class MusicService extends Service
 		//Media Player instance is prepared
 		player.setOnPreparedListener(this);
 		//Song has completed playback
-		player.setOnCompletionListener(this);
 		player.setOnErrorListener(this);
+	}
+	
+	public MediaPlayer getMediaPlayer()
+	{
+		return player;
 	}
 	
 	public void setSongList(ArrayList<Row> songs)
@@ -97,18 +103,12 @@ public class MusicService extends Service
 	@Override
 	public boolean onUnbind(Intent intent)
 	{
-	  this.player.stop();
+	
+	  if(player.isPlaying())
+		player.stop();
+		
 	  this.player.release();
 	  return false;
-	}
-
-	@Override
-	public void onCompletion(MediaPlayer mp) 
-	{
-		System.out.println("On Completion");
-		
-		if(player.getCurrentPosition()>0)
-			playNext();
 	}
 
 	@Override
@@ -123,6 +123,13 @@ public class MusicService extends Service
 	{
 		mp.start();
 		duration = mp.getDuration();
+		
+		if(toSeek)
+		{
+			seek(current);
+			toSeek = false;
+			current = 0;
+		}	
 		//setAllButtons(true);
 		
 		Intent notIntent = new Intent(this, AllSongsActivity.class);
@@ -170,7 +177,6 @@ public class MusicService extends Service
 			{
 				playSong = (Song) item;
 				songTitle = playSong.getName();
-				songLabel.setText(songTitle);
 			}	
 			else
 				return;
@@ -374,22 +380,24 @@ public class MusicService extends Service
 		
 	}
 
-	public void setSongLabel(TextView songTitleLabel) 
+	public String getDefaultSongTitle() 
 	{
-		songLabel = songTitleLabel;
+		if(songs != null & songs.size() > 1)
+			return songs.get(1).getName();
+		
+		return null;
+		
 	}
-	
-	/*public void setButtons(ArrayList<ImageButton> buttons)
-	{
-		this.buttons = buttons;
-	}
-	
-	private void setAllButtons(boolean value) 
-	{
-		for(int i =0; i<buttons.size(); i++)
-			buttons.get(i).setEnabled(value);
-	}*/
 
-	
+	public int getSongPosition()
+	{
+		return songPosition;
+	}
+
+	public void setToSeek(boolean toSeek, int current) 
+	{
+		this.toSeek = toSeek;
+		this.current = current;
+	}
 
 }

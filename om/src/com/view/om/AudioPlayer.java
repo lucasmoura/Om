@@ -40,23 +40,10 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	private int seekForwardTime = 5000; // 5000 milliseconds
 	private int seekBackwardTime = 5000;
 	
-	private enum onEnter 
-	{
-		NOW_PLAYING(1), NEW_SONG(2), CONTINUE(3);
-	
-		private int value;
-		
-		private onEnter(int value)
-		{
-			this.value = value;
-		}
-		
-		public int getValue()
-		{
-			return value;
-		}
-		
-	};
+	private final int NEW_SONG = 1;
+	private final int NOW_PLAYING = 2;
+	private final int CONTINUE = 3;
+	private final int PLAY = 4;
 	
 	
 	private boolean musicBound;
@@ -206,6 +193,10 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	    	switch (v.getId())
 	    	{
 	    		case R.id.playButton:
+	    			
+	    			if(onEnterIntent == CONTINUE)
+	    				onEnterIntent = PLAY;
+	    				
 	    			playSong();
 	    			break;
 	    			
@@ -241,31 +232,51 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	    }
 	};
 	
-	private boolean verifyPlaySongStatus()
+	
+	private void setUpProgressBar()
 	{
-		if(onEnterIntent == onEnter.NEW_SONG.getValue())
-		{
-			musicService.playSong();
-			onEnterIntent = onEnter.CONTINUE.getValue();
-			songProgressBar.setProgress(0);
-			songProgressBar.setMax(100);
-			
-			updateProgressBar();
-			return false;
-		}
-		else if(onEnterIntent == onEnter.NOW_PLAYING.getValue())
-		{
-			onEnterIntent = onEnter.CONTINUE.getValue();
-			return false;
-		}
+		songProgressBar.setProgress(0);
+		songProgressBar.setMax(100);
 		
-		return true;
+		updateProgressBar();
 	}
 	
 	private void playSong()
 	{
 		
-		if(!verifyPlaySongStatus())
+		
+		switch (onEnterIntent)
+		{
+			case NEW_SONG:
+				System.out.println("New Song");
+				musicService.playSong();
+				btnPlay.setImageResource(R.drawable.btn_pause);
+				setUpProgressBar();
+				onEnterIntent = CONTINUE;
+				break;
+			
+			case NOW_PLAYING:
+				onEnterIntent = CONTINUE;
+				break;
+			
+			case PLAY:
+				
+				if(musicService != null && isPlaying())
+				{
+					musicService.pausePlayer();
+					btnPlay.setImageResource(R.drawable.btn_play);
+				}
+				else
+				{
+					musicService.go();
+					btnPlay.setImageResource(R.drawable.btn_pause);
+				}
+				
+				break;
+				
+		}
+		
+		/*if(!verifyPlaySongStatus())
 			return;
 			
 		if(isPlaying())
@@ -288,22 +299,23 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 				// Changing button image to pause button
 				btnPlay.setImageResource(R.drawable.btn_pause);
 			}
-		}
+		}*/
 		
-		songProgressBar.setProgress(0);
-		songProgressBar.setMax(100);
-		
-		updateProgressBar();
+		setUpProgressBar();
 	}
 	
 	private void playNext()
 	{
 		musicService.playNext();
+		onEnterIntent = NEW_SONG;
+		playSong();
 	}
 	
 	private void playPrevious()
 	{
 		musicService.playPrevious();
+		onEnterIntent = NEW_SONG;
+		playSong();
 	
 	}
 	

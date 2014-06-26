@@ -221,7 +221,7 @@ public class AllSongsActivity extends ActionBarActivity
 				AudioPlayer.class);
 		// Sending songIndex to PlayerActivity
 		in.putExtra("songIndex", Integer.parseInt(view.getTag().toString()) );
-		in.putExtra("onEnter", 2);
+		in.putExtra("onEnter", 1);
 		setResult(100, in);
 		// Closing PlayListView
 		finish();
@@ -233,7 +233,7 @@ public class AllSongsActivity extends ActionBarActivity
 		Intent intent = new Intent(getApplicationContext(), 
 				AudioPlayer.class);
 		
-		intent.putExtra("onEnter", 1);
+		intent.putExtra("onEnter", 2);
 		
 		startActivity(intent);
 		

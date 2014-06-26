@@ -248,20 +248,14 @@ public class MusicService extends Service
 	public void playPrevious()
 	{
 		if(repeat)
-		{
-			playSong();
 			return;
-		}
 		
 		System.out.println("Current Position: "+player.getCurrentPosition());
 		
 		if(isPlaying())
 		{
 			if(player.getCurrentPosition()>10000)
-			{
-				playSong();
 				return;
-			}
 		}
 		
 		songPosition--;
@@ -272,7 +266,6 @@ public class MusicService extends Service
 		if(songPosition<0)
 			songPosition = songs.size()-1;
 		
-		playSong();
 	}
 	
 	public void playNext()
@@ -280,11 +273,9 @@ public class MusicService extends Service
 		System.out.println("Play Next");
 		
 		if(repeat)
-		{
-			playSong();
 			return;
-		}	
-		else if(shuffle)
+		
+		if(shuffle)
 		{
 			int newSong = songPosition;
 			int size = songs.size();
@@ -304,8 +295,6 @@ public class MusicService extends Service
 		
 		if(songs.get(songPosition) instanceof Section)
 			songPosition++;
-		
-		playSong();
 		
 	}
 	

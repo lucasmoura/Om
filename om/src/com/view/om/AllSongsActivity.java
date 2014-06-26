@@ -13,9 +13,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -34,6 +36,7 @@ public class AllSongsActivity extends ActionBarActivity
 	private int indexListSize;
 	private int alphabetSize;
 	private GestureDetector mGestureDetector;
+	private ImageButton nowPlayingBtn;
 	
 	class SideIndexGestureListener extends GestureDetector.SimpleOnGestureListener
 	{
@@ -62,6 +65,9 @@ public class AllSongsActivity extends ActionBarActivity
         
         songListControl = new SongListControl(getApplicationContext());
         songDisplay = (ListView)findViewById(R.id.songList);
+        nowPlayingBtn = (ImageButton) findViewById(R.id.now_playing_button);
+        
+        nowPlayingBtn.setOnClickListener(onClickListener);
         
         displayAllSongs();
         displayAlphabeticIndex();
@@ -175,7 +181,29 @@ public class AllSongsActivity extends ActionBarActivity
     	return super.onOptionsItemSelected(item);
        
     }
+    
+    final OnClickListener onClickListener = new OnClickListener()
+    {
 
+		@Override
+		public void onClick(View v) 
+		{
+			switch (v.getId())
+			{
+				case R.id.now_playing_button:
+					goToAudioPlayer();
+					break;
+			}
+			
+		}
+    	
+    };
+
+    @Override
+    public void onStop()
+    {
+    	super.onStop();
+    }
     
     @Override
     public boolean onTouchEvent(MotionEvent event)
@@ -193,10 +221,22 @@ public class AllSongsActivity extends ActionBarActivity
 				AudioPlayer.class);
 		// Sending songIndex to PlayerActivity
 		in.putExtra("songIndex", Integer.parseInt(view.getTag().toString()) );
+		in.putExtra("onEnter", 2);
 		setResult(100, in);
 		// Closing PlayListView
 		finish();
 		startActivity(in);
     }
+    
+    private void goToAudioPlayer() 
+    {
+		Intent intent = new Intent(getApplicationContext(), 
+				AudioPlayer.class);
+		
+		intent.putExtra("onEnter", 1);
+		
+		startActivity(intent);
+		
+	}
 
 }

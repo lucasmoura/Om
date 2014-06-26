@@ -40,10 +40,29 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	private int seekForwardTime = 5000; // 5000 milliseconds
 	private int seekBackwardTime = 5000;
 	
+	private enum onEnter 
+	{
+		NOW_PLAYING(1), NEW_SONG(2), CONTINUE(3);
+	
+		private int value;
+		
+		private onEnter(int value)
+		{
+			this.value = value;
+		}
+		
+		public int getValue()
+		{
+			return value;
+		}
+		
+	};
+	
 	
 	private boolean musicBound;
 	private boolean isRepeat;
 	private boolean isShuffle;
+	private int onEnterIntent;
 	
 	private MusicService musicService;
 	private SongListControl songListControl;
@@ -100,7 +119,21 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 		
 		Intent intent = getIntent();
 		
-		currentSongIndex = intent.getExtras().getInt("songIndex");
+		if(intent.getExtras() != null)
+		{
+			try
+			{
+				currentSongIndex = intent.getExtras().getInt("songIndex");
+			}
+			catch(Exception e)
+			{
+				
+			}
+			
+			onEnterIntent = intent.getExtras().getInt("onEnter");
+			
+		}	
+			
 		
      	 // play selected song
          
@@ -208,14 +241,38 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	    }
 	};
 	
+	private boolean verifyPlaySongStatus()
+	{
+		if(onEnterIntent == onEnter.NEW_SONG.getValue())
+		{
+			musicService.playSong();
+			onEnterIntent = onEnter.CONTINUE.getValue();
+			songProgressBar.setProgress(0);
+			songProgressBar.setMax(100);
+			
+			updateProgressBar();
+			return false;
+		}
+		else if(onEnterIntent == onEnter.NOW_PLAYING.getValue())
+		{
+			onEnterIntent = onEnter.CONTINUE.getValue();
+			return false;
+		}
+		
+		return true;
+	}
+	
 	private void playSong()
 	{
-		System.out.println("PlaySong");
 		
+		if(!verifyPlaySongStatus())
+			return;
+			
 		if(isPlaying())
 		{
 			if(musicService !=null)
 			{
+				System.out.println("Pause audio player");
 				musicService.pausePlayer();
 				// Changing button image to play button
 				btnPlay.setImageResource(R.drawable.btn_play);
@@ -228,7 +285,6 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 			{
 				System.out.println("Go");
 				musicService.go();
-				System.out.println("Set Title");
 				// Changing button image to pause button
 				btnPlay.setImageResource(R.drawable.btn_pause);
 			}
@@ -396,6 +452,9 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	@Override
 	public void onDestroy()
 	{
+		System.out.println("OnDestroy");
+		mHandler.removeCallbacks(mUpdateTimeTask);
+	    unbindService(musicConnection);
 		stopService(playIntent);
 		musicService=null;
 		super.onDestroy();

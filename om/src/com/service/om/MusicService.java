@@ -52,7 +52,6 @@ public class MusicService extends Service
 	private AudioManager audioManager;
 	private int duration;
 	private TextView songLabel;
-	//private ArrayList<ImageButton> buttons;
 	
 	private static final int NOTIFY_ID = 1;
 	
@@ -109,10 +108,7 @@ public class MusicService extends Service
 		System.out.println("On Completion");
 		
 		if(player.getCurrentPosition()>0)
-		{
-			//mp.reset();
 			playNext();
-		}
 	}
 
 	@Override
@@ -255,6 +251,17 @@ public class MusicService extends Service
 		{
 			playSong();
 			return;
+		}
+		
+		System.out.println("Current Position: "+player.getCurrentPosition());
+		
+		if(isPlaying())
+		{
+			if(player.getCurrentPosition()>10000)
+			{
+				playSong();
+				return;
+			}
 		}
 		
 		songPosition--;

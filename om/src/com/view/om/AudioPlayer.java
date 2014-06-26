@@ -1,6 +1,5 @@
 package com.view.om;
 
-import java.util.ArrayList;
 
 import com.control.om.SongListControl;
 import com.om.R;
@@ -36,6 +35,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	private ImageButton btnBackward;
 	private ImageButton btnNext;
 	private ImageButton btnPrevious;
+	private ImageButton btnPlaylist;
 
 	private int seekForwardTime = 5000; // 5000 milliseconds
 	private int seekBackwardTime = 5000;
@@ -56,7 +56,6 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	private TextView songTitleLabel;
 	
 	private SeekBar songProgressBar;
-	private ArrayList<ImageButton> buttons;
 	
 	
 	@Override
@@ -77,6 +76,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 		btnPrevious = (ImageButton) findViewById(R.id.previousButton);
 		btnRepeat = (ImageButton) findViewById(R.id.repeatButton);
 		btnShuffle = (ImageButton) findViewById(R.id.shuffleButton);
+		btnPlaylist = (ImageButton) findViewById(R.id.playlistButton);
 		
 		songProgressBar = (SeekBar) findViewById(R.id.songProgressBar);
 		songTitleLabel = (TextView) findViewById(R.id.songTitle);
@@ -90,16 +90,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 		btnBackward.setOnClickListener(clickListener);
 		btnShuffle.setOnClickListener(clickListener);
 		btnPrevious.setOnClickListener(clickListener);
-		
-		buttons = new ArrayList<ImageButton>();
-		
-		buttons.add(btnBackward);
-		buttons.add(btnForward);
-		buttons.add(btnNext);
-		buttons.add(btnPlay);
-		buttons.add(btnPrevious);
-		buttons.add(btnRepeat);
-		buttons.add(btnShuffle);
+		btnPlaylist.setOnClickListener(clickListener);
 		
 		songProgressBar.setOnSeekBarChangeListener(this);
 		playIntent = null;
@@ -175,21 +166,6 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
     	
     }
 	
-	@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-        super.onActivityResult(requestCode, resultCode, data);
-        
-        if(resultCode == 100)
-        {
-         	 int currentSongIndex = data.getExtras().getInt("songIndex");
-         	 // play selected song
-             musicService.setSong(currentSongIndex);
-             playSong();
-        }
- 
-    }
-	
 	final OnClickListener clickListener = new OnClickListener() 
 	{
 	    public void onClick(View v) 
@@ -224,6 +200,10 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	    			repeatSong();
 	    			break;
 	    			
+	    		case R.id.playlistButton:
+	    			displayAllSongs();
+	    			break;
+	    			
 	    	}
 	    }
 	};
@@ -249,7 +229,6 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 				System.out.println("Go");
 				musicService.go();
 				System.out.println("Set Title");
-				//songTitleLabel.setText(musicService.getSongTitle());
 				// Changing button image to pause button
 				btnPlay.setImageResource(R.drawable.btn_pause);
 			}
@@ -343,6 +322,15 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 			btnRepeat.setImageResource(R.drawable.btn_repeat_focused);
 			btnShuffle.setImageResource(R.drawable.btn_shuffle);
 		}
+	}
+	
+	private void displayAllSongs() 
+	{
+		Intent intent = new Intent(getApplicationContext(),
+				AllSongsActivity.class);
+		startActivity(intent);
+		
+		
 	}
 
 	@Override

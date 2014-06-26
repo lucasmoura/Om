@@ -9,6 +9,7 @@
     <!-- Menu labels for all songs activity -->
     <string name="end_menu_button">End</string>
     <string name="shuffle_menu_button">Shuffle</string>
+    <string name="songs_textview">Songs</string>
 
     <!-- Labels for player layout -->
     <string name="song_title_default">My Song</string>
@@ -25,4 +26,7 @@
     <string name="shuffle_button">Shuffle Button</string>
     <string name="title_activity_audio_player">AudioPlayer</string>
 
+    <!-- All songs Button -->
+    <string name="now_playing_description">Now Playing Button</string>
+    
 </resources>

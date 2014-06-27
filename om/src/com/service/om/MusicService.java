@@ -285,6 +285,7 @@ public class MusicService extends Service
 		
 		if(repeat)
 		{
+			System.out.println("Repeat");
 			playSong();
 			return;
 		}	
@@ -313,20 +314,14 @@ public class MusicService extends Service
 		
 	}
 	
-	public void setShuffle()
+	public void setShuffle(boolean shuffle)
 	{
-		if(shuffle)
-			shuffle = false;
-		else
-			shuffle = true;
+		this.shuffle = shuffle;
 	}
 	
-	public void setRepeat()
+	public void setRepeat(boolean repeat)
 	{
-		if(repeat)
-			repeat = false;
-		else
-			repeat = true;
+		this.repeat = repeat;
 	}
 	
 	

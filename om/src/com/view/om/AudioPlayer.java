@@ -255,7 +255,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	private void setUpProgressBar()
 	{
 		songProgressBar.setProgress(0);
-		songProgressBar.setMax(100);
+		songProgressBar.setMax(musicService.getDuration());
 		
 		updateProgressBar();
 	}
@@ -357,7 +357,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 		{
 			isShuffle = false;
 			btnShuffle.setImageResource(R.drawable.btn_shuffle);
-			musicService.setShuffle();
+			musicService.setShuffle(false);
 		}
 		else
 		{
@@ -367,8 +367,8 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 			isRepeat = false;
 			btnShuffle.setImageResource(R.drawable.btn_shuffle_focused);
 			btnRepeat.setImageResource(R.drawable.btn_repeat);
-			
-			musicService.setShuffle();
+			musicService.setRepeat(false);
+			musicService.setShuffle(true);
 		}
 	}
 	
@@ -377,7 +377,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 		if(isRepeat)
 		{
 			isRepeat = false;
-			musicService.setRepeat();
+			musicService.setRepeat(false);
 			btnRepeat.setImageResource(R.drawable.btn_repeat);
 		}
 		else
@@ -386,7 +386,8 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 			isRepeat = true;
 			// make shuffle to false
 			isShuffle = false;
-			musicService.setRepeat();
+			musicService.setRepeat(true);
+			musicService.setShuffle(false);
 			btnRepeat.setImageResource(R.drawable.btn_repeat_focused);
 			btnShuffle.setImageResource(R.drawable.btn_shuffle);
 		}
@@ -446,7 +447,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 		String title = audioPreferences.getString("title", defaultTitle);
 		boolean repeat = audioPreferences.getBoolean("repeat", false);
 		boolean shuffle = audioPreferences.getBoolean("shuffle", false);
-		int current = audioPreferences.getInt("position", 0);
+		int current = audioPreferences.getInt("position", 1);
 		int duration = audioPreferences.getInt("duration", 0);
 		int index = audioPreferences.getInt("songIndex", 1);
 		
@@ -460,6 +461,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 		System.out.println(title);
 		System.out.println("Duration: "+duration);
 		System.out.println("Positio: "+current);
+		System.out.println("Index: "+index);
 		songTitleLabel.setText(title);
 		
 		if(repeat)
@@ -477,6 +479,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 		if(isPlaying())
 		{
 			btnPlay.setImageResource(R.drawable.btn_pause);
+			musicService.setSong(index);
 			setUpProgressBar();
 			onEnterIntent = CONTINUE;
 		}	
@@ -554,9 +557,10 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 			   songCurrentDurationLabel.setText(""+Util.milliSecondsToTimer(currentDuration));
 			   
 			   // Updating progress bar
-			   int progress = (int)(Util.getProgressPercentage(currentDuration, totalDuration));
+			   //int progress = (int)(Util.getProgressPercentage(currentDuration, totalDuration));
 			   //Log.d("Progress", ""+progress);
-			   songProgressBar.setProgress(progress);
+			   songProgressBar.setMax((int)totalDuration);
+			   songProgressBar.setProgress((int)currentDuration);
 			   
 			   // Running this thread after 100 milliseconds
 		       mHandler.postDelayed(this, 100);
@@ -574,6 +578,7 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	@Override
 	public void onStop()
 	{
+		System.out.println("OnStop");
 		setAudioPreferences();
 		super.onStop();
 	}

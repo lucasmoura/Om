@@ -528,8 +528,8 @@ public class AudioPlayer extends ActionBarActivity  implements SeekBar.OnSeekBar
 	public void onStopTrackingTouch(SeekBar seekBar) 
 	{
 		mHandler.removeCallbacks(mUpdateTimeTask);
-		int totalDuration = musicService.getDuration();
-		int currentPosition = Util.progressToTimer(seekBar.getProgress(), totalDuration);
+		//int totalDuration = musicService.getDuration();
+		int currentPosition = musicService.getPosition();
 		
 		// forward or backward to certain seconds
 		musicService.seek(currentPosition);

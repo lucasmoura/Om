@@ -1,22 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     
-    <item 
-    
-    	android:id="@+id/action_shuffle"
-    	android:icon="@drawable/rand"
-    	android:orderInCategory="1"
-    	android:showAsAction="always"
-    	android:title="@string/shuffle_menu_button"
-        
+    <!-- Playlist -->
+    <item
+        android:id="@+id/playlist_action"
+        android:icon="@drawable/playlist"
+        android:title="@string/playlist_action"
+        android:showAsAction="always"
+         
     />
     
+    <item
+    	android:id="@+id/now_playing_action"
+    	android:icon="@drawable/now_playing"
+    	android:title="@string/now_playing_action"
+    	android:showAsAction="always"
+     
+     />  
+    
     <item 
         
-        android:id="@+id/action_end"
+        android:id="@+id/end_action"
         android:icon="@drawable/end"
         android:orderInCategory="2"
-        android:showAsAction="always"
-        android:title="@string/end_menu_button"
+        android:showAsAction="never"
+        android:title="@string/end_action"
     />
     
     

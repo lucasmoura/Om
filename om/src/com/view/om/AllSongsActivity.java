@@ -4,7 +4,8 @@ package com.view.om;
 import com.control.om.SongListControl;
 import com.om.R;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.GestureDetector;
@@ -13,11 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -25,7 +23,7 @@ import android.widget.TextView;
 
 
 
-public class AllSongsActivity extends ActionBarActivity
+public class AllSongsActivity extends Activity
 {
 
 	public ListView songDisplay;
@@ -36,7 +34,6 @@ public class AllSongsActivity extends ActionBarActivity
 	private int indexListSize;
 	private int alphabetSize;
 	private GestureDetector mGestureDetector;
-	private ImageButton nowPlayingBtn;
 	
 	class SideIndexGestureListener extends GestureDetector.SimpleOnGestureListener
 	{
@@ -57,7 +54,7 @@ public class AllSongsActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //requestWindowFeature(Window.FEATURE_NO_TITLE);
         
         setContentView(R.layout.all_songs);
         
@@ -65,9 +62,6 @@ public class AllSongsActivity extends ActionBarActivity
         
         songListControl = new SongListControl(getApplicationContext());
         songDisplay = (ListView)findViewById(R.id.songList);
-        nowPlayingBtn = (ImageButton) findViewById(R.id.now_playing_button);
-        
-        nowPlayingBtn.setOnClickListener(onClickListener);
         
         displayAllSongs();
         displayAlphabeticIndex();
@@ -159,7 +153,8 @@ public class AllSongsActivity extends ActionBarActivity
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu) 
+    {
         
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.all_songs, menu);
@@ -173,31 +168,19 @@ public class AllSongsActivity extends ActionBarActivity
         // as you specify a parent activity in AndroidManifest.xml.
     	switch (item.getItemId()) 
     	{
+    	
+    		case R.id.now_playing_action:
+    			goToAudioPlayer();
+    			break;
     
-	    	case R.id.action_end:
+	    	case R.id.end_action:
 	    	  System.exit(0);
 	    	  break;
     	}
+    	
     	return super.onOptionsItemSelected(item);
        
     }
-    
-    final OnClickListener onClickListener = new OnClickListener()
-    {
-
-		@Override
-		public void onClick(View v) 
-		{
-			switch (v.getId())
-			{
-				case R.id.now_playing_button:
-					goToAudioPlayer();
-					break;
-			}
-			
-		}
-    	
-    };
 
     @Override
     public void onStop()
@@ -235,6 +218,7 @@ public class AllSongsActivity extends ActionBarActivity
 		
 		intent.putExtra("onEnter", 2);
 		
+		finish();
 		startActivity(intent);
 		
 	}

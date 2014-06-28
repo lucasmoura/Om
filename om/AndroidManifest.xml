@@ -30,10 +30,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
         <activity
             android:name="com.view.om.AudioPlayer"
             android:label="@string/title_activity_audio_player" >
+        </activity>
+        <activity
+            android:name="com.view.om.PlayListActivity"
+            android:label="@string/title_activity_play_list" >
         </activity>
     </application>
 

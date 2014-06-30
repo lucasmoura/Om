@@ -169,6 +169,10 @@ public class AllSongsActivity extends Activity
     	switch (item.getItemId()) 
     	{
     	
+    		case R.id.playlist_action:
+    			goToPlaylist();
+    			break;
+    	
     		case R.id.now_playing_action:
     			goToAudioPlayer();
     			break;
@@ -182,7 +186,7 @@ public class AllSongsActivity extends Activity
        
     }
 
-    @Override
+	@Override
     public void onStop()
     {
     	super.onStop();
@@ -222,5 +226,14 @@ public class AllSongsActivity extends Activity
 		startActivity(intent);
 		
 	}
+    
+    private void goToPlaylist() 
+    {
+    	Intent playlistIntent = new Intent(getApplicationContext(), PlayListActivity.class);
+    	
+    	finish();
+    	startActivity(playlistIntent);
+	}
+
 
 }

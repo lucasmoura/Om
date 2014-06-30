@@ -25,13 +25,14 @@
     <string name="shuffle_button">Shuffle Button</string>
     <string name="title_activity_audio_player">AudioPlayer</string>
 
-    <!-- All songs Button -->
-    <string name="now_playing_description">Now Playing Button</string>
-
     <!-- All songs Action Bar Buttons -->
     <string name="playlist_action">Playlist</string>
     <string name="end_action">End</string>
     <string name="now_playing_action">Now Playing</string>
     <string name="title_activity_play_list">PlayLists</string>
-
+	
+    <!--Playlist Buttons -->
+    <string name="add_new_playlist">New Playlist&#8230;</string>
+    <string name="new_playlist_button">New Playlist</string>
+    
 </resources>

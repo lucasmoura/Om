@@ -1,27 +1,68 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/playlist_activity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.view.om.PlayListActivity"
-    tools:ignore="MergeRootFrame">
+    android:layout_height="match_parent">
     
     
     
     <RelativeLayout     
-        android:id="@+id/new_playlis_layout"
+        android:id="@+id/new_playlist_layout"
         android:layout_width="fill_parent"
-        android:layout_height="60dp">
+        android:layout_height="40dp">
         
         <ImageButton 
         	android:id="@+id/new_playlist_button"
-            
+            android:src="@drawable/plus"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:contentDescription="@string/new_playlist_button"
+            android:paddingTop="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="5dp"
         />
+        
+        <TextView 
+        	android:id="@+id/new_playlist_textview"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="@string/add_new_playlist"
+        	android:layout_toRightOf="@id/new_playlist_button"
+        	android:paddingTop="10dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="5dp"
+        />
+        
+        <View
+   			android:layout_width="fill_parent"
+    		android:layout_height="1dp"
+   			android:background="@android:color/darker_gray"
+   			android:layout_alignParentBottom="true"
+   		/>
+        
         
     </RelativeLayout>
     
-    
+
+    <LinearLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent" 
+	    android:layout_below="@id/new_playlist_layout"
+	    android:baselineAligned="false">    
+	    
+	  
+	    <ListView
+	        android:id="@+id/playlistList"
+	        android:layout_width="0dp"
+	        android:layout_height="match_parent"
+	        android:layout_weight="1"
+	        android:fastScrollEnabled="true" 
+	    />
+    	
+    </LinearLayout>	
     
  </RelativeLayout>
